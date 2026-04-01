@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍕 Η Πίτσα των Κλασμάτων</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito Sans', sans-serif;
+    background: #FFF9F0;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 1.5rem 1rem 3rem;
+  }
+  #app { width: 100%; max-width: 760px; }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: #3d1f00;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .subtitle-top {
+    text-align: center;
+    font-size: 14px;
+    color: #8a5a2a;
+    margin-bottom: 1.25rem;
+  }
+
+  .instructions-box {
+    background: #FFF8E7;
+    border: 2px solid #EF9F27;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .inst-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #633806;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .inst-rows { display: flex; flex-wrap: wrap; gap: 8px; }
+  .inst-chip {
+    border-radius: 30px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chip-a { background: #FAECE7; color: #712B13; border: 1.5px solid #F0997B; }
+  .chip-b { background: #EAF3DE; color: #27500A; border: 1.5px solid #97C459; }
+  .chip-c { background: #E6F1FB; color: #0C447C; border: 1.5px solid #85B7EB; }
+  .inst-goal { margin-top: 10px; font-size: 13px; font-weight: 700; color: #854F0B; }
+  .inst-hint { margin-top: 6px; font-size: 12px; color: #BA7517; }
+
+  .pizzas-row {
+    display: flex; gap: 14px; justify-content: center;
+    flex-wrap: wrap; margin-bottom: 1.25rem;
+  }
+  .pizza-card {
+    background: #fff;
+    border: 2px solid #e8d5b8;
+    border-radius: 18px;
+    padding: 14px 12px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    flex: 1; min-width: 195px; max-width: 225px;
+    transition: border-color 0.35s, background 0.35s, box-shadow 0.35s;
+    box-shadow: 0 2px 8px rgba(180,120,40,0.07);
+  }
+  .pizza-card.correct {
+    border-color: #639922;
+    background: #F5FBE8;
+    box-shadow: 0 4px 16px rgba(60,150,20,0.13);
+  }
+
+  .person-badge {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; font-weight: 800;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .badge-a { color: #993C1D; }
+  .badge-b { color: #3B6D11; }
+  .badge-c { color: #185FA5; }
+
+  canvas { display: block; }
+
+  .fraction-big {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Nunito', sans-serif;
+  }
+  .frac-stack { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .frac-num { font-size: 22px; font-weight: 900; color: #2d1a00; }
+  .frac-line { width: 30px; height: 2.5px; background: #2d1a00; border-radius: 2px; margin: 2px 0; }
+  .frac-den { font-size: 16px; font-weight: 700; color: #6b4020; }
+  .frac-pct { font-size: 13px; font-weight: 700; }
+  .pct-a { color: #993C1D; }
+  .pct-b { color: #3B6D11; }
+  .pct-c { color: #185FA5; }
+
+  .progress-bar {
+    width: 100%; height: 11px;
+    background: #f0e8d8;
+    border-radius: 10px; overflow: hidden;
+    border: 1px solid #ddd0b8;
+  }
+  .progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s; }
+  .fill-a { background: #D85A30; }
+  .fill-b { background: #639922; }
+  .fill-c { background: #378ADD; }
+
+  .slider-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+  .slider-label { font-size: 11px; color: #8a6040; white-space: nowrap; font-weight: 600; }
+  .slider-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 5px;
+    background: #e0cdb0;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #D85A30;
+    border: 3px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+  .slider-num {
+    font-size: 13px; font-weight: 800;
+    min-width: 26px; text-align: center;
+    background: #FFF0E0;
+    border: 1.5px solid #e8c090;
+    border-radius: 8px; padding: 3px 6px;
+    color: #6b3010;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  #status-area {
+    text-align: center; margin-bottom: 1rem;
+    min-height: 50px; padding: 0 8px;
+  }
+  #status-msg {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: #8a6030;
+    line-height: 1.4;
+  }
+  #status-msg.win { color: #27500A; font-size: 20px; }
+  #status-msg.warm { color: #854F0B; }
+
+  .btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-reset {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; font-weight: 800;
+    background: #fff;
+    border: 2px solid #c8a070;
+    border-radius: 12px; padding: 10px 22px;
+    cursor: pointer; color: #6b4020;
+    transition: background 0.2s;
+  }
+  .btn-reset:hover { background: #FFF0DC; }
+  .btn-help {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; font-weight: 800;
+    background: #FFF8E7;
+    border: 2px solid #EF9F27;
+    border-radius: 12px; padding: 10px 22px;
+    cursor: pointer; color: #633806;
+    transition: background 0.2s;
+  }
+  .btn-help:hover { background: #FAEEDA; }
+
+  .help-popup {
+    background: #FFF8E7;
+    border: 2px solid #EF9F27;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-top: 14px;
+    font-size: 14px;
+    color: #633806;
+    line-height: 1.7;
+    text-align: center;
+    display: none;
+  }
+  .help-popup.show { display: block; }
+
+  #confetti-layer {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 9999;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>🍕 Η Πίτσα των Κλασμάτων</h1>
+  <p class="subtitle-top">Μαθηματικά Δημοτικού — Κλάσματα</p>
+
+  <div class="instructions-box">
+    <div class="inst-title"><span>🎯</span> Πώς παίζεται;</div>
+    <div class="inst-rows">
+      <div class="inst-chip chip-a"><span>👧</span> Σοφία τρώει <strong>1 κομμάτι</strong> από πίτσα Α</div>
+      <div class="inst-chip chip-b"><span>👦</span> Αντρέας τρώει <strong>2 κομμάτια</strong> από πίτσα Β</div>
+      <div class="inst-chip chip-c"><span>👦</span> Μιχάλης τρώει <strong>4 κομμάτια</strong> από πίτσα Γ</div>
+    </div>
+    <div class="inst-goal">🎯 Στόχος: Κούνησε τα ράβδια ώστε και οι τρεις να φάνε <u>ακριβώς</u> την ίδια ποσότητα!</div>
+    <div class="inst-hint">💡 Αν κόψεις πίτσα σε περισσότερα κομμάτια, κάθε κομμάτι γίνεται πιο μικρό!</div>
+  </div>
+
+  <div class="pizzas-row">
+    <div class="pizza-card" id="cardA">
+      <div class="person-badge badge-a"><span style="font-size:20px">👧</span> Σοφία — Πίτσα Α</div>
+      <canvas id="canvasA" width="170" height="170"></canvas>
+      <div class="fraction-big">
+        <div class="frac-stack">
+          <span class="frac-num">1</span>
+          <div class="frac-line"></div>
+          <span class="frac-den" id="denomA">—</span>
+        </div>
+        <span class="frac-pct pct-a" id="pctA">—%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill fill-a" id="barA" style="width:0%"></div></div>
+      <div class="slider-row">
+        <span class="slider-label">Κομμάτια:</span>
+        <input type="range" id="sliderA" min="1" max="16" value="3" step="1">
+        <span class="slider-num" id="numA">3</span>
+      </div>
+    </div>
+
+    <div class="pizza-card" id="cardB">
+      <div class="person-badge badge-b"><span style="font-size:20px">👦</span> Αντρέας — Πίτσα Β</div>
+      <canvas id="canvasB" width="170" height="170"></canvas>
+      <div class="fraction-big">
+        <div class="frac-stack">
+          <span class="frac-num">2</span>
+          <div class="frac-line"></div>
+          <span class="frac-den" id="denomB">—</span>
+        </div>
+        <span class="frac-pct pct-b" id="pctB">—%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill fill-b" id="barB" style="width:0%"></div></div>
+      <div class="slider-row">
+        <span class="slider-label">Κομμάτια:</span>
+        <input type="range" id="sliderB" min="2" max="16" value="5" step="1">
+        <span class="slider-num" id="numB">5</span>
+      </div>
+    </div>
+
+    <div class="pizza-card" id="cardC">
+      <div class="person-badge badge-c"><span style="font-size:20px">👦</span> Μιχάλης — Πίτσα Γ</div>
+      <canvas id="canvasC" width="170" height="170"></canvas>
+      <div class="fraction-big">
+        <div class="frac-stack">
+          <span class="frac-num">4</span>
+          <div class="frac-line"></div>
+          <span class="frac-den" id="denomC">—</span>
+        </div>
+        <span class="frac-pct pct-c" id="pctC">—%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill fill-c" id="barC" style="width:0%"></div></div>
+      <div class="slider-row">
+        <span class="slider-label">Κομμάτια:</span>
+        <input type="range" id="sliderC" min="4" max="16" value="9" step="1">
+        <span class="slider-num" id="numC">9</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="status-area">
+    <div id="status-msg">Κούνησε τα ράβδια για να μοιράσεις τις πίτσες!</div>
+  </div>
+
+  <div class="btns">
+    <button class="btn-reset" onclick="resetRandom()">🔀 Νέα αρχή</button>
+    <button class="btn-help" onclick="toggleHelp()">💡 Χρειάζομαι βοήθεια</button>
+  </div>
+  <div class="help-popup" id="helpBox">
+    <strong>Χρειάζεσαι βοήθεια;</strong><br>
+    Ρώτα τον βοηθό ΤΝ (π.χ. Claude στο claude.ai)!<br>
+    Γράψε: <em>«Δεν μπορώ να βρω τη λύση στο παιχνίδι με τις πίτσες, μπορείς να με καθοδηγήσεις;»</em><br>
+    και θα σου εξηγήσει βήμα-βήμα πώς να σκεφτείς! 🤖
+  </div>
+</div>
+
+<div id="confetti-layer"></div>
+
+<script>
+function mulberry32(a) {
+  return function() {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function drawRealisticPizza(canvasId, totalSlices, eatenSlices) {
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const R = 78, rCrust = 78, rDough = 70, rSauce = 63;
+  ctx.clearRect(0, 0, W, H);
+
+  const TWO_PI = Math.PI * 2;
+  const sliceAngle = TWO_PI / totalSlices;
+  const startAngle = -Math.PI / 2;
+
+  for (let i = 0; i < totalSlices; i++) {
+    const a0 = startAngle + i * sliceAngle;
+    const a1 = a0 + sliceAngle;
+    const eaten = i < eatenSlices;
+
+    // crust
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, rCrust, a0, a1); ctx.closePath();
+    ctx.fillStyle = eaten ? '#b8855a' : '#c8792a'; ctx.fill();
+
+    // dough
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, rDough, a0, a1); ctx.closePath();
+    ctx.fillStyle = eaten ? '#d0a870' : '#e8a040'; ctx.fill();
+
+    // sauce
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, rSauce, a0, a1); ctx.closePath();
+    ctx.fillStyle = eaten ? '#a07060' : '#bf3518'; ctx.fill();
+
+    if (!eaten) {
+      // cheese blobs
+      const rand = mulberry32(i * 137 + totalSlices * 31);
+      const numBlobs = Math.max(2, Math.floor(9 / totalSlices) + 2);
+      const cheeseColors = ['#f5d060','#f0c840','#f8d870','#ede0a0'];
+      for (let b = 0; b < numBlobs; b++) {
+        const t = rand() * 0.62 + 0.18;
+        const angOff = (rand() * 0.8 - 0.4) * sliceAngle;
+        const midA = a0 + sliceAngle * 0.5 + angOff;
+        const dist = rSauce * t * 0.88;
+        const bx = cx + dist * Math.cos(midA);
+        const by = cy + dist * Math.sin(midA);
+        const bRad = 3.5 + rand() * (rSauce * 0.2);
+        ctx.beginPath();
+        ctx.ellipse(bx, by, bRad, bRad * 0.8, rand() * Math.PI, 0, TWO_PI);
+        ctx.fillStyle = cheeseColors[b % cheeseColors.length];
+        ctx.fill();
+      }
+      // toppings
+      const rand2 = mulberry32(i * 53 + totalSlices * 17 + 999);
+      const toppings = [
+        {col:'#1a1a1a', r:3.5},
+        {col:'#8B0000', r:3},
+        {col:'#1a6e1a', r:2.5}
+      ];
+      const numT = Math.max(1, Math.floor(6 / totalSlices) + 1);
+      for (let t2 = 0; t2 < numT; t2++) {
+        const tp = toppings[t2 % toppings.length];
+        const tAng = a0 + sliceAngle * (0.2 + rand2() * 0.6);
+        const tDist = rSauce * (0.28 + rand2() * 0.52);
+        const tx = cx + tDist * Math.cos(tAng);
+        const ty = cy + tDist * Math.sin(tAng);
+        ctx.globalAlpha = 0.88;
+        ctx.beginPath(); ctx.arc(tx, ty, tp.r, 0, TWO_PI);
+        ctx.fillStyle = tp.col; ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // slice lines
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + rCrust * Math.cos(a0), cy + rCrust * Math.sin(a0));
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  // outer crust ring border
+  ctx.beginPath(); ctx.arc(cx, cy, rCrust, 0, TWO_PI);
+  ctx.strokeStyle = 'rgba(100,50,5,0.3)';
+  ctx.lineWidth = 2; ctx.stroke();
+
+  // dashed boundary between eaten/uneaten
+  if (eatenSlices > 0 && eatenSlices < totalSlices) {
+    const a0 = startAngle;
+    const a1 = startAngle + eatenSlices * sliceAngle;
+    ctx.save();
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, rCrust, a0, a1); ctx.closePath();
+    ctx.strokeStyle = '#7a3a00';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([5, 4]); ctx.stroke();
+    ctx.setLineDash([]); ctx.restore();
+  }
+
+  // center dot
+  ctx.beginPath(); ctx.arc(cx, cy, 5, 0, TWO_PI);
+  ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1; ctx.stroke();
+
+  // eaten label
+  if (eatenSlices > 0) {
+    const midA2 = startAngle + (eatenSlices / 2) * sliceAngle;
+    const lx = cx + rCrust * 0.52 * Math.cos(midA2);
+    const ly = cy + rCrust * 0.52 * Math.sin(midA2);
+    ctx.font = 'bold 11px Nunito Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(80,30,0,0.72)';
+    ctx.fillRect(lx - 17, ly - 9, 34, 15);
+    ctx.fillStyle = '#fff';
+    ctx.fillText(eatenSlices + '/' + totalSlices, lx, ly + 3);
+    ctx.textAlign = 'left';
+  }
+}
+
+let solved = false;
+let confettiId = null;
+
+function update() {
+  const a = parseInt(document.getElementById('sliderA').value);
+  const b = parseInt(document.getElementById('sliderB').value);
+  const c = parseInt(document.getElementById('sliderC').value);
+
+  document.getElementById('numA').textContent = a;
+  document.getElementById('numB').textContent = b;
+  document.getElementById('numC').textContent = c;
+  document.getElementById('denomA').textContent = a;
+  document.getElementById('denomB').textContent = b;
+  document.getElementById('denomC').textContent = c;
+
+  const fA = 1/a, fB = 2/b, fC = 4/c;
+  const pA = Math.round(fA * 100);
+  const pB = Math.round(fB * 100);
+  const pC = Math.round(fC * 100);
+  document.getElementById('pctA').textContent = pA + '%';
+  document.getElementById('pctB').textContent = pB + '%';
+  document.getElementById('pctC').textContent = pC + '%';
+
+  const maxF = Math.max(fA, fB, fC);
+  document.getElementById('barA').style.width = (fA/maxF*100).toFixed(1) + '%';
+  document.getElementById('barB').style.width = (fB/maxF*100).toFixed(1) + '%';
+  document.getElementById('barC').style.width = (fC/maxF*100).toFixed(1) + '%';
+
+  drawRealisticPizza('canvasA', a, 1);
+  drawRealisticPizza('canvasB', b, 2);
+  drawRealisticPizza('canvasC', c, 4);
+
+  const eps = 0.0001;
+  const allEqual = Math.abs(fA-fB)<eps && Math.abs(fB-fC)<eps;
+  const close = Math.abs(fA-fB)<0.05 && Math.abs(fB-fC)<0.05;
+
+  ['cardA','cardB','cardC'].forEach(id => { document.getElementById(id).className = 'pizza-card'; });
+  const msg = document.getElementById('status-msg');
+
+  if (allEqual && !solved) {
+    solved = true;
+    ['cardA','cardB','cardC'].forEach(id => { document.getElementById(id).classList.add('correct'); });
+    msg.textContent = '🎉 ΜΠΡΑΒΟ! Και οι τρεις έφαγαν ακριβώς το ίδιο! Είσαι μαθηματικός!';
+    msg.className = 'win';
+    startConfetti();
+  } else if (!allEqual) {
+    solved = false; stopConfetti();
+    if (close) { msg.textContent = '🔥 Πολύ κοντά! Μια μικρή αλλαγή ακόμα!'; msg.className = 'warm'; }
+    else { msg.textContent = 'Σοφία: ' + pA + '% — Αντρέας: ' + pB + '% — Μιχάλης: ' + pC + '%'; msg.className = ''; }
+  }
+}
+
+function resetRandom() {
+  solved = false; stopConfetti();
+  document.getElementById('status-msg').className = '';
+  let a, b, c;
+  do {
+    a = Math.floor(Math.random()*10)+1;
+    b = Math.floor(Math.random()*9)+2;
+    c = Math.floor(Math.random()*8)+5;
+  } while ((a===4&&b===8&&c===16)||(a===2&&b===4&&c===8)||(a===1&&b===2&&c===4)||b<2||c<4);
+  document.getElementById('sliderA').value = a;
+  document.getElementById('sliderB').value = b;
+  document.getElementById('sliderC').value = c;
+  ['cardA','cardB','cardC'].forEach(id => { document.getElementById(id).className = 'pizza-card'; });
+  update();
+}
+
+function toggleHelp() { document.getElementById('helpBox').classList.toggle('show'); }
+
+const confColors = ['#E8A020','#D85A30','#639922','#378ADD','#D4537E','#7F77DD'];
+function startConfetti() {
+  if (confettiId) return;
+  const cont = document.getElementById('confetti-layer');
+  confettiId = setInterval(() => {
+    for (let i=0;i<8;i++) {
+      const el = document.createElement('div');
+      const sz = 7+Math.random()*10;
+      el.style.cssText = 'position:absolute;width:'+sz+'px;height:'+sz+'px;background:'+confColors[Math.floor(Math.random()*confColors.length)]+';left:'+(Math.random()*100)+'%;top:-20px;border-radius:'+(Math.random()>.5?'50%':'3px')+';';
+      cont.appendChild(el);
+      const dur = 1800+Math.random()*1400;
+      el.animate([
+        {transform:'translateY(0) translateX(0) rotate(0deg)',opacity:1},
+        {transform:'translateY('+(window.innerHeight+40)+'px) translateX('+((Math.random()-.5)*180)+'px) rotate('+(Math.random()*720)+'deg)',opacity:0}
+      ],{duration:dur,easing:'ease-in',fill:'forwards'}).onfinish=()=>el.remove();
+    }
+  },160);
+  setTimeout(stopConfetti,5500);
+}
+function stopConfetti() {
+  if (confettiId){ clearInterval(confettiId); confettiId=null; }
+  const cont = document.getElementById('confetti-layer');
+  if (cont) cont.innerHTML = '';
+}
+
+document.getElementById('sliderA').addEventListener('input', update);
+document.getElementById('sliderB').addEventListener('input', update);
+document.getElementById('sliderC').addEventListener('input', update);
+
+resetRandom();
+</script>
+</body>
+</html>
